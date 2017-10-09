@@ -69,8 +69,30 @@ class PLottoModel: IPLottoModel {
     }
 
     override fun getLatestWinResult(context: Context, handler: (Array<PLottoInfo.WinResult>?, error: IOException?) -> Unit) {
-        val latestDrawNumber = Util.latestDrawNumber(Definition.PLOTTO_START_DATE, "yyyy-MM-dd")
-        getWinResult(context, latestDrawNumber, handler)
+        val latestRound = Util.latestDrawNumber(Definition.PLOTTO_START_DATE, "yyyy-MM-dd")
+        val pLottoDB = PrDatabase.getInstance(context).pLottoDB
+        val winResultList = pLottoDB.selectWinResults(latestRound, 1)
+        if (0 < winResultList.count()) {
+            val winResultJsonString = winResultList[0]["jsonString"].toString()
+            val winResultArray = Gson().fromJson(winResultJsonString, Array<PLottoInfo.WinResult>::class.java)
+            handler(winResultArray, null)
+        } else {
+            PrHttpRequest().getPLottoNumber(0, object: PrHttpRequest.ResponseCallback {
+                override fun onResponse(api: PrHttpRequest.API, obj: Any?) {
+                    if (obj is Array<*> && 0 < obj.count() && obj[0] is PLottoInfo.WinResult) {
+                        val winResultArray = obj as Array<PLottoInfo.WinResult>
+                        insertWinResult(context, winResultArray[0].round!!.toInt(), winResultArray)
+                        handler(winResultArray, null)
+                    } else {
+                        handler(null, IOException("연금복권520 정보를 가져오지 못했습니다."))
+                    }
+                }
+
+                override fun onFailure(api: PrHttpRequest.API, error: IOException) {
+                    handler(null, error)
+                }
+            })
+        }
     }
 
     override fun insertWinResult(context: Context, round: Int, winResult: Array<PLottoInfo.WinResult>): Long {

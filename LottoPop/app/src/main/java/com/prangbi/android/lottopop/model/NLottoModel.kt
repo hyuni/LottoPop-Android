@@ -81,7 +81,28 @@ class NLottoModel: INLottoModel {
 
     override fun getLatestWinResult(context: Context, handler: (NLottoInfo.WinResult?, error: IOException?) -> Unit) {
         val latestDrawNumber = Util.latestDrawNumber(Definition.NLOTTO_START_DATE, "yyyy-MM-dd")
-        getWinResult(context, latestDrawNumber, handler)
+        val nLottoDB = PrDatabase.getInstance(context).nLottoDB
+        val winResultList = nLottoDB.selectWinResults(latestDrawNumber, 1)
+        if (0 < winResultList.count()) {
+            val winResultJsonString = winResultList[0]["jsonString"].toString()
+            val winResult = Gson().fromJson(winResultJsonString, NLottoInfo.WinResult::class.java)
+            handler(winResult, null)
+        } else {
+            PrHttpRequest().getNLottoNumber(0, object: PrHttpRequest.ResponseCallback {
+                override fun onResponse(api: PrHttpRequest.API, obj: Any?) {
+                    if (obj is NLottoInfo.WinResult) {
+                        insertWinResult(context, obj.drwNo, obj)
+                        handler(obj, null)
+                    } else {
+                        handler(null, IOException("나눔로또 정보를 가져오지 못했습니다."))
+                    }
+                }
+
+                override fun onFailure(api: PrHttpRequest.API, error: IOException) {
+                    handler(null, error)
+                }
+            })
+        }
     }
 
     override fun insertWinResult(context: Context, drwNo: Int, winResult: NLottoInfo.WinResult): Long {
