@@ -5,7 +5,7 @@ import android.database.SQLException
 import android.database.sqlite.SQLiteDatabase
 
 /**
- * Created by guprohs on 2017. 8. 19..
+ * Created by Prangbi on 2017. 8. 19..
  * 연금복권520 DB
  */
 interface IPLottoDB {

@@ -1,4 +1,4 @@
-package com.prangbi.android.lottopop.controller.activity
+package com.prangbi.android.lottopop.controller
 
 import android.app.Activity
 import android.app.Dialog
@@ -13,7 +13,7 @@ import com.prangbi.android.lottopop.helper.Util
 import kotlinx.android.synthetic.main.nlotto_web_activity.*
 
 /**
- * Created by guprohs on 2017. 7. 25..
+ * Created by Prangbi on 2017. 7. 25..
  */
 class WebActivity : AppCompatActivity() {
     // Variable

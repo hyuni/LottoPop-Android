@@ -1,7 +1,7 @@
 package com.prangbi.android.lottopop.base
 
 /**
- * Created by guprohs on 2017. 7. 15..
+ * Created by Prangbi on 2017. 7. 15..
  */
 class Definition {
     companion object {

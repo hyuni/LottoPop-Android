@@ -18,7 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.prangbi.android.lottopop.controller.activity.MainActivity"
+            android:name="com.prangbi.android.lottopop.controller.MainActivity"
             android:theme="@style/SplashTheme"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden">
@@ -28,15 +28,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.prangbi.android.lottopop.controller.activity.NLottoWinResultActivity"
+        <activity android:name="com.prangbi.android.lottopop.controller.NLottoWinResultActivity"
             android:screenOrientation="portrait"
             android:label="@string/nLottoWinResultActivityName">
         </activity>
-        <activity android:name="com.prangbi.android.lottopop.controller.activity.PLottoWinResultActivity"
+        <activity android:name="com.prangbi.android.lottopop.controller.PLottoWinResultActivity"
             android:screenOrientation="portrait"
             android:label="@string/pLottoWinResultActivityName">
         </activity>
-        <activity android:name="com.prangbi.android.lottopop.controller.activity.WebActivity"
+        <activity android:name="com.prangbi.android.lottopop.controller.WebActivity"
             android:screenOrientation="portrait">
         </activity>
 

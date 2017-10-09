@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper
 import com.prangbi.android.lottopop.base.Definition
 
 /**
- * Created by guprohs on 2017. 1. 5..
+ * Created by Prangbi on 2017. 1. 5..
  */
 class PrDatabase private constructor(context: Context): SQLiteOpenHelper(context, Definition.DB_NAME, null, Definition.DB_VERSION) {
     // Variable

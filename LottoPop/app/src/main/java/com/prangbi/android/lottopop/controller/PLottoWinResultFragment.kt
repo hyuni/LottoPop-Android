@@ -1,33 +1,40 @@
-package com.prangbi.android.lottopop.controller.activity
+package com.prangbi.android.lottopop.controller
 
 import android.app.Activity
 import android.app.Dialog
+import android.app.Fragment
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.view.MenuItem
+import android.support.v4.widget.SwipeRefreshLayout
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.AbsListView
 import com.prangbi.android.lottopop.R
 import com.prangbi.android.lottopop.base.Definition
-import com.prangbi.android.lottopop.controller.adapter.PLottoWinResultAdapter
 import com.prangbi.android.lottopop.helper.Util
 import com.prangbi.android.lottopop.model.PLottoInfo
 import com.prangbi.android.lottopop.model.PLottoModel
-import kotlinx.android.synthetic.main.plotto_winresult_activity.*
+import com.prangbi.android.lottopop.model.adapter.PLottoWinResultAdapter
+import kotlinx.android.synthetic.main.plotto_winresult_fragment.*
 
 /**
- * Created by guprohs on 2017. 8. 21..
+ * Created by Prangbi on 2017. 10. 1..
  */
-class PLottoWinResultActivity: AppCompatActivity() {
-    // Companion
+class PLottoWinResultFragment: Fragment() {
+    /**
+     * Companion
+     */
     companion object {
-        const val WIN_RESULT_WEB_URL = Definition.SERVER_URL + "/gameResult.do?method=win520&Round="
+        private val WIN_RESULT_WEB_URL = Definition.SERVER_URL + "/gameResult.do?method=win520&Round="
     }
 
-    // Variable
+    /**
+     * Variable
+     */
     private lateinit var mContext: Activity
     private val winResultAdapter = PLottoWinResultAdapter()
     private var broadcastReceiver: BroadcastReceiver? = null
@@ -38,51 +45,44 @@ class PLottoWinResultActivity: AppCompatActivity() {
     private var isLoading = false
     private var autoRequestCount = 0
 
-    // Lifecycle
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.plotto_winresult_activity)
-        mContext = this
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        return inflater!!.inflate(R.layout.plotto_winresult_fragment, container, false)
+    }
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        progressDialog = Util.makeLoadingDialog(mContext)
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        mContext = activity
+
+        initRecommendationLayout()
         initWinResultListView()
         initBroadcastReciever()
 
-//        mainLayout.setOnClickListener {
-//            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-//            imm.hideSoftInputFromWindow(numberInputEt.getWindowToken(), 0)
-//        }
-
+        progressDialog = Util.makeLoadingDialog(mContext)
         canConnect = Util.canConnectToInternet(mContext)
         isLoading = true
         nextRound = 0
         autoRequestCount = 0
         showProgressDialog()
-        getWinResult()
+        getLatestWinResult()
+        getRecommendationGroups()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-
+    override fun onDestroyView() {
+        super.onDestroyView()
         broadcastReceiver?.let {
-            unregisterReceiver(broadcastReceiver)
+            mContext?.unregisterReceiver(broadcastReceiver)
         }
     }
 
-    // Event
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
-            android.R.id.home -> {
-                // NavUtils.navigateUpFromSameTask(context);
-                finish()
-                return true
-            }
-        }
-        return super.onOptionsItemSelected(item)
+    /**
+     * Function
+     */
+    private fun initRecommendationLayout() {
+        recommendLayout.setOnClickListener(View.OnClickListener {
+            getRecommendationGroups()
+        })
     }
 
-    // Function
     private fun initBroadcastReciever() {
         broadcastReceiver = object: BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
@@ -96,7 +96,7 @@ class PLottoWinResultActivity: AppCompatActivity() {
         val intentFilter = IntentFilter()
         intentFilter.addAction("com.prangbi.android.lottopop.CONNECTIVITY_CHANGE")
         broadcastReceiver?.let {
-            registerReceiver(broadcastReceiver, intentFilter)
+            mContext.registerReceiver(broadcastReceiver, intentFilter)
         }
     }
 
@@ -105,7 +105,7 @@ class PLottoWinResultActivity: AppCompatActivity() {
         winResultListView.setOnItemClickListener { parent, view, position, id ->
             val item = parent.adapter.getItem(position) as Array<PLottoInfo.WinResult>
             if(0 < item.count()) {
-                val url = WIN_RESULT_WEB_URL + item[0].round
+                val url = PLottoWinResultFragment.WIN_RESULT_WEB_URL + item[0].round
                 Util.moveToWebActivity(mContext, "당첨결과", url)
             }
 
@@ -129,6 +129,11 @@ class PLottoWinResultActivity: AppCompatActivity() {
             }
 
         })
+
+        swipeRefreshLayout.setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener {
+            isLoading = true
+            getLatestWinResult()
+        })
     }
 
     private fun showProgressDialog() {
@@ -137,6 +142,23 @@ class PLottoWinResultActivity: AppCompatActivity() {
 
     private fun hideProgressDialog() {
         progressDialog.dismiss()
+    }
+
+    private fun getRecommendationGroups() {
+        val groups = pLottoModel.getRecommendationGroups()
+
+        recommendGroup1TextView.text = groups[0].toString()
+        recommendGroup2TextView.text = groups[1].toString()
+
+        recommendGroup1TextView.background = Util.getPLottoGroupBackground(mContext, groups[0])
+        recommendGroup2TextView.background = Util.getPLottoGroupBackground(mContext, groups[1])
+    }
+
+    private fun commonCompletion() {
+        winResultAdapter.notifyDataSetChanged()
+        swipeRefreshLayout.isRefreshing = false
+        hideProgressDialog()
+        isLoading = false
     }
 
     private fun getWinResult() {
@@ -155,14 +177,29 @@ class PLottoWinResultActivity: AppCompatActivity() {
                 if (true == shouldRequestMore) {
                     getWinResult()
                 } else {
-                    winResultAdapter.notifyDataSetChanged()
-                    hideProgressDialog()
-                    isLoading = false
+                    commonCompletion()
                 }
             } else {
+                commonCompletion()
                 Util.showToast(mContext, error.localizedMessage)
-                hideProgressDialog()
-                isLoading = false
+            }
+        })
+    }
+
+    private fun getLatestWinResult() {
+        pLottoModel.getLatestWinResult(mContext, { winResultArr, error ->
+            if (null == error) {
+                winResultAdapter.removeAll()
+                if (null != winResultArr && 0 < winResultArr.size) {
+                    nextRound = winResultArr[0].round!!.toInt() - 1
+                    autoRequestCount += 1
+                    getWinResult()
+                } else {
+                    commonCompletion()
+                }
+            } else {
+                commonCompletion()
+                Util.showToast(mContext, error.localizedMessage)
             }
         })
     }

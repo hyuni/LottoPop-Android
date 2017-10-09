@@ -1,4 +1,4 @@
-package com.prangbi.android.lottopop.controller.adapter
+package com.prangbi.android.lottopop.model.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -12,7 +12,7 @@ import com.prangbi.android.lottopop.model.NLottoInfo
 import java.util.*
 
 /**
- * Created by guprohs-MB11-2012 on 9/9/16.
+ * Created by Prangbi on 9/9/16.
  */
 class NLottoWinResultAdapter: BaseAdapter() {
     // Variable
@@ -85,5 +85,9 @@ class NLottoWinResultAdapter: BaseAdapter() {
 
     fun addItems(winResultList: List<NLottoInfo.WinResult>) {
         items.addAll(winResultList)
+    }
+
+    fun removeAll() {
+        items.removeAll(items)
     }
 }

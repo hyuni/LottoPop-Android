@@ -7,54 +7,30 @@ import com.prangbi.android.lottopop.helper.PrHttpRequest
 import com.prangbi.android.lottopop.helper.Util
 import com.prangbi.android.lottopop.helper.database.PrDatabase
 import java.io.IOException
+import java.util.*
 
 /**
- * Created by guprohs on 2017. 8. 21..
+ * Created by Prangbi on 2017. 8. 21..
  */
-/**
- * 나눔로또
- */
-class NLottoInfo {
-    data class WinResult(
-            var drwNo: Int = 0,
-            var drwNoDate: String? = null,
-            var totSellamnt: Long = 0,
-            var firstWinamnt: Long = 0,
-            var firstPrzwnerCo: Int = 0,
-            var drwtNo1: Short = 0,
-            var drwtNo2: Short = 0,
-            var drwtNo3: Short = 0,
-            var drwtNo4: Short = 0,
-            var drwtNo5: Short = 0,
-            var drwtNo6: Short = 0,
-            var bnusNo: Short = 0
-    )
+class NLottoModel {
+    fun getRecommendationNumbers(): IntArray {
+        // NOTE: This is a FAKE logic for open source, NOT Prangbi's logic.
+        // You can create your own recommendation logic.
 
-    // 02 03 08 18 23 32 + 45
-    data class MyLotto(
-            var id: Int = 0,
-            var drwNo: Int = 0,
-            var drwtNo1: Short = 0,
-            var drwtNo2: Short = 0,
-            var drwtNo3: Short = 0,
-            var drwtNo4: Short = 0,
-            var drwtNo5: Short = 0,
-            var drwtNo6: Short = 0,
-            var bnusNo: Short = 0
-    )
-}
+        val random = Random()
+        var numbers = IntArray(6, { 0 })
+        for (i in 0..(numbers.size-1)) {
+            var number = 0
+            do {
+                number = random.nextInt(45) + 1
+            } while (true == numbers.contains(number))
+            numbers[i] = number
+        }
+        numbers.sort()
+        return numbers
+    }
 
-/**
- * 나눔로또
- */
-interface INLottoModel {
-    fun getWinResult(context: Context, drwNo: Int, handler: (NLottoInfo.WinResult?, error: IOException?) -> Unit)
-    fun getLatestWinResult(context: Context, handler: (NLottoInfo.WinResult?, error: IOException?) -> Unit)
-    fun insertWinResult(context: Context, drwNo: Int, winResult: NLottoInfo.WinResult): Long
-}
-
-class NLottoModel: INLottoModel {
-    override fun getWinResult(context: Context, drwNo: Int, handler: (NLottoInfo.WinResult?, error: IOException?) -> Unit) {
+    fun getWinResult(context: Context, drwNo: Int, handler: (NLottoInfo.WinResult?, error: IOException?) -> Unit) {
         val nLottoDB = PrDatabase.getInstance(context).nLottoDB
         val winResultList = nLottoDB.selectWinResults(drwNo, 1)
         if (0 < winResultList.count()) {
@@ -79,7 +55,7 @@ class NLottoModel: INLottoModel {
         }
     }
 
-    override fun getLatestWinResult(context: Context, handler: (NLottoInfo.WinResult?, error: IOException?) -> Unit) {
+    fun getLatestWinResult(context: Context, handler: (NLottoInfo.WinResult?, error: IOException?) -> Unit) {
         val latestDrawNumber = Util.latestDrawNumber(Definition.NLOTTO_START_DATE, "yyyy-MM-dd")
         val nLottoDB = PrDatabase.getInstance(context).nLottoDB
         val winResultList = nLottoDB.selectWinResults(latestDrawNumber, 1)
@@ -105,7 +81,7 @@ class NLottoModel: INLottoModel {
         }
     }
 
-    override fun insertWinResult(context: Context, drwNo: Int, winResult: NLottoInfo.WinResult): Long {
+    fun insertWinResult(context: Context, drwNo: Int, winResult: NLottoInfo.WinResult): Long {
         val winResultJsonString = Gson().toJson(winResult)
         return PrDatabase.getInstance(context).nLottoDB.insertWinResult(drwNo, winResultJsonString)
     }

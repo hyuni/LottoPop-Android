@@ -9,7 +9,7 @@ import okhttp3.*
 import java.io.IOException
 
 /**
- * Created by guprohs on 2017. 7. 15..
+ * Created by Prangbi on 2017. 7. 15..
  */
 class PrHttpRequest {
     // Definition

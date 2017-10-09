@@ -13,14 +13,14 @@ import android.support.v7.app.ActionBar
 import android.widget.ProgressBar
 import android.widget.Toast
 import com.prangbi.android.lottopop.R
-import com.prangbi.android.lottopop.controller.activity.WebActivity
+import com.prangbi.android.lottopop.controller.WebActivity
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
 /**
- * Created by guprohs-MB11-2012 on 9/8/16.
+ * Created by Prangbi on 9/8/16.
  */
 class Util: BroadcastReceiver() {
     // Definition

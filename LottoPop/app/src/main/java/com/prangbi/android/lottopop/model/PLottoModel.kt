@@ -7,42 +7,30 @@ import com.prangbi.android.lottopop.helper.PrHttpRequest
 import com.prangbi.android.lottopop.helper.Util
 import com.prangbi.android.lottopop.helper.database.PrDatabase
 import java.io.IOException
+import java.util.*
 
 /**
- * Created by guprohs on 2017. 8. 21..
+ * Created by Prangbi on 2017. 8. 21..
  */
-/**
- * 연금복권520
- */
-class PLottoInfo {
-    data class WinResult(
-            var pensionDrawDate: String? = null,
-            var rankClass: String? = null,
-            var rank: String? = null,
-            var rankNo: String? = null,
-            var rankAmt: String? = null,
-            var round: String? = null,
-            var drawDate: String? = null
-    )
+class PLottoModel {
+    fun getRecommendationGroups(): IntArray {
+        // NOTE: This is a FAKE logic for open source, NOT Prangbi's logic.
+        // You can create your own recommendation logic.
 
-    data class MyLotto(
-            var rankClass: String? = null,
-            var rankNo: String? = null,
-            var round: String? = null
-    )
-}
+        val random = Random()
+        var groups = IntArray(2, { 0 })
+        for (i in 0..(groups.size-1)) {
+            var group = 0
+            do {
+                group = random.nextInt(7) + 1
+            } while (true == groups.contains(group))
+            groups[i] = group
+        }
+        groups.sort()
+        return groups
+    }
 
-/**
- * 연금복권520
- */
-interface IPLottoModel {
-    fun getWinResult(context: Context, round: Int, handler: (Array<PLottoInfo.WinResult>?, error: IOException?) -> Unit)
-    fun getLatestWinResult(context: Context, handler: (Array<PLottoInfo.WinResult>?, error: IOException?) -> Unit)
-    fun insertWinResult(context: Context, round: Int, winResult: Array<PLottoInfo.WinResult>): Long
-}
-
-class PLottoModel: IPLottoModel {
-    override fun getWinResult(context: Context, round: Int, handler: (Array<PLottoInfo.WinResult>?, error: IOException?) -> Unit) {
+    fun getWinResult(context: Context, round: Int, handler: (Array<PLottoInfo.WinResult>?, error: IOException?) -> Unit) {
         val pLottoDB = PrDatabase.getInstance(context).pLottoDB
         val winResultList = pLottoDB.selectWinResults(round, 1)
         if (0 < winResultList.count()) {
@@ -68,7 +56,7 @@ class PLottoModel: IPLottoModel {
         }
     }
 
-    override fun getLatestWinResult(context: Context, handler: (Array<PLottoInfo.WinResult>?, error: IOException?) -> Unit) {
+    fun getLatestWinResult(context: Context, handler: (Array<PLottoInfo.WinResult>?, error: IOException?) -> Unit) {
         val latestRound = Util.latestDrawNumber(Definition.PLOTTO_START_DATE, "yyyy-MM-dd")
         val pLottoDB = PrDatabase.getInstance(context).pLottoDB
         val winResultList = pLottoDB.selectWinResults(latestRound, 1)
@@ -95,7 +83,7 @@ class PLottoModel: IPLottoModel {
         }
     }
 
-    override fun insertWinResult(context: Context, round: Int, winResult: Array<PLottoInfo.WinResult>): Long {
+    fun insertWinResult(context: Context, round: Int, winResult: Array<PLottoInfo.WinResult>): Long {
         val winResultJsonString = Gson().toJson(winResult)
         return PrDatabase.getInstance(context).pLottoDB.insertWinResult(round, winResultJsonString)
     }
