@@ -19,6 +19,6 @@
 
 
 # 라이브러리
-* google-gson: JSON 변환 라이브러리.
+* google-gson: JSON 변환.
 * OkHttp: HTTP 통신.
 * ZXing: QR 코드 스캔.
