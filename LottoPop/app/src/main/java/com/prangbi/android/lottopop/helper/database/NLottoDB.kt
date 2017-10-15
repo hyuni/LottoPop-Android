@@ -56,7 +56,7 @@ class NLottoDB constructor(val readableDB: SQLiteDatabase, val writableDB: SQLit
         val list = mutableListOf<Map<String, Any>>()
 
         val last = drwNo
-        var first = last - count
+        var first = last - if (0 < count - 1) count - 1 else 0
         if (0 > first) {
             first = 0
         }
@@ -84,7 +84,7 @@ class NLottoDB constructor(val readableDB: SQLiteDatabase, val writableDB: SQLit
         val list = mutableListOf<Map<String, Any>>()
 
         val last = drwNo
-        var first = last - count
+        var first = last - if (0 < count - 1) count - 1 else 0
         if (0 > first) {
             first = 0
         }
