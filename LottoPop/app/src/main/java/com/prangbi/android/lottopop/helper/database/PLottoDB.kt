@@ -12,6 +12,7 @@ interface IPLottoDB {
     fun insertWinResult(round: Int, jsonString: String): Long
     fun insertMyLotto(round: Int, jsonString: String): Long
     fun selectWinResults(round: Int, count: Int): List<Map<String, Any>>
+    fun selectLatestWinResult(): Map<String, Any>?
     fun selectMyLottos(round: Int, count: Int): List<Map<String, Any>>
     fun deleteMyLotto(round: Int): Int
 }
@@ -78,6 +79,24 @@ class PLottoDB constructor(val readableDB: SQLiteDatabase, val writableDB: SQLit
         }
         result.close()
         return list
+    }
+
+    override fun selectLatestWinResult(): Map<String, Any>? {
+        var winResultMap: Map<String, Any>? = null
+        val query = "SELECT * FROM " + TABLE_PLOTTO +
+                " ORDER BY round DESC LIMIT 1;"
+        val result = readableDB.rawQuery(query, null)
+        if (result.moveToFirst()) {
+            val resRound = result.getInt(1)
+            val resJsonString = result.getString(2)
+
+            val map = mutableMapOf<String, Any>()
+            map.put("round", resRound)
+            map.put("jsonString", resJsonString)
+            winResultMap = map
+        }
+        result.close()
+        return winResultMap
     }
 
     override fun selectMyLottos(round: Int, count: Int): List<Map<String, Any>> {

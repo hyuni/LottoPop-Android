@@ -75,7 +75,14 @@ class NLottoModel {
                 }
 
                 override fun onFailure(api: PrHttpRequest.API, error: IOException) {
-                    handler(null, error)
+                    val winResultMap = nLottoDB.selectLatestWinResult()
+                    val winResultJsonString = if (null != winResultMap) winResultMap["jsonString"].toString() else null
+                    if (null != winResultJsonString) {
+                        val winResult = Gson().fromJson(winResultJsonString, NLottoInfo.WinResult::class.java)
+                        handler(winResult, null)
+                    } else {
+                        handler(null, error)
+                    }
                 }
             })
         }

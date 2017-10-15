@@ -77,7 +77,14 @@ class PLottoModel {
                 }
 
                 override fun onFailure(api: PrHttpRequest.API, error: IOException) {
-                    handler(null, error)
+                    val winResultMap = pLottoDB.selectLatestWinResult()
+                    val winResultJsonString = if (null != winResultMap) winResultMap["jsonString"].toString() else null
+                    if (null != winResultJsonString) {
+                        val winResultArray = Gson().fromJson(winResultJsonString, Array<PLottoInfo.WinResult>::class.java)
+                        handler(winResultArray, null)
+                    } else {
+                        handler(null, error)
+                    }
                 }
             })
         }
