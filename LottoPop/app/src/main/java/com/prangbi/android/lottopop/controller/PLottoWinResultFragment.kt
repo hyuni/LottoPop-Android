@@ -191,6 +191,7 @@ class PLottoWinResultFragment: Fragment() {
             if (null == error) {
                 winResultAdapter.removeAll()
                 if (null != winResultArr && 0 < winResultArr.size) {
+                    winResultAdapter.addItem(winResultArr)
                     nextRound = winResultArr[0].round!!.toInt() - 1
                     autoRequestCount += 1
                     getWinResult()
