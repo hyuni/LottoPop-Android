@@ -14,11 +14,17 @@
 
 # 요구사항
 * Android 4.1+
-* Android Studio 2.2.3+
-* Kotlin 1.1.51+
+* Android Studio 3.1+
+* Kotlin 1.2.31+
 
 
 # 라이브러리
-* google-gson: JSON 변환.
-* OkHttp: HTTP 통신.
-* ZXing: QR 코드 스캔.
+* google-gson \
+  https://github.com/google/gson \
+  : JSON 변환.
+* OkHttp \
+  : http://square.github.io/okhttp \
+  : HTTP 통신.
+* ZXing \
+  : https://github.com/zxing/zxing \
+  : QR 코드 스캔.
