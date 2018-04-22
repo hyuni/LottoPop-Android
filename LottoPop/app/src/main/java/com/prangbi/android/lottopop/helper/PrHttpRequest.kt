@@ -43,7 +43,7 @@ class PrHttpRequest {
         val request = Request.Builder().url(urlStr).build()
         client.newCall(request).enqueue(object: Callback {
             override fun onResponse(call: Call, response: Response) {
-                val bodyStr = response.body().string()
+                val bodyStr = response.body()?.string()
                 val gson = Gson()
                 val result = gson.fromJson(bodyStr, PrHttpRequest.ResponseResult::class.java)
                 if ("success" == result.returnValue) {
@@ -71,7 +71,7 @@ class PrHttpRequest {
         val request = Request.Builder().url(urlStr).build()
         client.newCall(request).enqueue(object: Callback {
             override fun onResponse(call: Call, response: Response) {
-                val bodyStr = response.body().string()
+                val bodyStr = response.body()?.string()
                 val gson = Gson()
                 val winResultMap = gson.fromJson(bodyStr, Map::class.java)
                 val winResultStr = gson.toJson(winResultMap["rows"])

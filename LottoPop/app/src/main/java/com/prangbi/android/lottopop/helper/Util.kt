@@ -53,7 +53,7 @@ class Util: BroadcastReceiver() {
             val nowTime = Date().time
             var diffTime = nowTime - startTime
             if (0L > diffTime) {
-                diffTime *= 1
+                diffTime *= -1
             }
             if (0L != diffTime) {
                 latestNumber = (diffTime / (24*60*60*1000) / 7).toInt()

@@ -56,7 +56,7 @@ class NLottoModel {
     }
 
     fun getLatestWinResult(context: Context, handler: (NLottoInfo.WinResult?, error: IOException?) -> Unit) {
-        val latestDrawNumber = Util.latestDrawNumber(Definition.NLOTTO_START_DATE, "yyyy-MM-dd")
+        val latestDrawNumber = Util.latestDrawNumber(Definition.NLOTTO_START_DATE, "yyyy-MM-dd HH:mm")
         val nLottoDB = PrDatabase.getInstance(context).nLottoDB
         val winResultList = nLottoDB.selectWinResults(latestDrawNumber, 1)
         if (0 < winResultList.count()) {
@@ -64,7 +64,7 @@ class NLottoModel {
             val winResult = Gson().fromJson(winResultJsonString, NLottoInfo.WinResult::class.java)
             handler(winResult, null)
         } else {
-            PrHttpRequest().getNLottoNumber(0, object: PrHttpRequest.ResponseCallback {
+            PrHttpRequest().getNLottoNumber(latestDrawNumber, object: PrHttpRequest.ResponseCallback {
                 override fun onResponse(api: PrHttpRequest.API, obj: Any?) {
                     if (obj is NLottoInfo.WinResult) {
                         insertWinResult(context, obj.drwNo, obj)

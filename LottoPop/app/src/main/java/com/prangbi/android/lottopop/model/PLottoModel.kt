@@ -57,7 +57,7 @@ class PLottoModel {
     }
 
     fun getLatestWinResult(context: Context, handler: (Array<PLottoInfo.WinResult>?, error: IOException?) -> Unit) {
-        val latestRound = Util.latestDrawNumber(Definition.PLOTTO_START_DATE, "yyyy-MM-dd")
+        val latestRound = Util.latestDrawNumber(Definition.PLOTTO_START_DATE, "yyyy-MM-dd HH:mm")
         val pLottoDB = PrDatabase.getInstance(context).pLottoDB
         val winResultList = pLottoDB.selectWinResults(latestRound, 1)
         if (0 < winResultList.count()) {
@@ -65,7 +65,7 @@ class PLottoModel {
             val winResultArray = Gson().fromJson(winResultJsonString, Array<PLottoInfo.WinResult>::class.java)
             handler(winResultArray, null)
         } else {
-            PrHttpRequest().getPLottoNumber(0, object: PrHttpRequest.ResponseCallback {
+            PrHttpRequest().getPLottoNumber(latestRound, object: PrHttpRequest.ResponseCallback {
                 override fun onResponse(api: PrHttpRequest.API, obj: Any?) {
                     if (obj is Array<*> && 0 < obj.count() && obj[0] is PLottoInfo.WinResult) {
                         val winResultArray = obj as Array<PLottoInfo.WinResult>
