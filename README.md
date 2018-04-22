@@ -20,7 +20,7 @@
 
 # 라이브러리
 * google-gson \
-  https://github.com/google/gson \
+  : https://github.com/google/gson \
   : JSON 변환.
 * OkHttp \
   : http://square.github.io/okhttp \
